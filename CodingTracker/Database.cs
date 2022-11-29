@@ -4,13 +4,14 @@ using System.Configuration;
 namespace CodingTracker
 {
     internal class Database
+
     {
+        internal static string connectionString =
+                  ConfigurationManager.AppSettings.Get("sqliteDbFile");
         internal static void InitDatabase()
         {
             try
             {
-                string connectionString =
-                  ConfigurationManager.AppSettings.Get("sqliteDbFile");
 
                 using var connection = new SqliteConnection(connectionString);
                 connection.Open();
@@ -18,9 +19,9 @@ namespace CodingTracker
                 tableCmd.CommandText =
                     "CREATE TABLE IF NOT EXISTS codingTracker (" +
                     "Id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "Duration INTEGER," +
+                    "Duration STRING," +
                     "StartTime STRING," +
-                    "EndTime String" +
+                    "EndTime STRING" +
                     ");";
                 tableCmd.ExecuteNonQuery();
             }

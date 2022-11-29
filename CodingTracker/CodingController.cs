@@ -9,17 +9,16 @@ using System.Threading.Tasks;
 
 namespace CodingTracker
 {
-using static CodingTracker.Utils;
+    using static Utils;
+    using static Database;
+    
     internal class CodingController
     {
         internal void GetAllRecords()
         {
+            using var connection = new SqliteConnection(connectionString);
             try
             {
-                string connectionString =
-                  ConfigurationManager.AppSettings.Get("sqliteDbFile");
-
-                using var connection = new SqliteConnection(connectionString);
                 connection.Open();
                 var tableCmd = connection.CreateCommand();
                 tableCmd.CommandText =
@@ -37,7 +36,7 @@ using static CodingTracker.Utils;
                             Id = reader.GetInt32(0),
                             StartTime = reader.GetDateTime(1),
                             EndTime = reader.GetDateTime(2),
-                            Duration = Utils.GetDuration(reader.GetDateTime(1), reader.GetDateTime(2))
+                            Duration = reader.GetTimeSpan(3),
                         });
                     }
                 }
@@ -46,8 +45,70 @@ using static CodingTracker.Utils;
             {
                 Console.WriteLine("An error occured");
             }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        static internal void NukeDatabase()
+        {
+            using var connection = new SqliteConnection(connectionString);
+            try
+            {
+                connection.Open();
+                var tableCmd = connection.CreateCommand();
+                tableCmd.CommandText =
+                    "DROP TABLE codingTracker;";
+
+                tableCmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                Console.WriteLine("An error occured");
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
 
-        
+        static internal void InsertSession()
+        {
+            using var connection = new SqliteConnection(connectionString);
+
+            DateTime startTime = DateTime.Now;
+            DateTime endTime = DateTime.Now.AddDays(2);
+            TimeSpan duration = startTime.Subtract(endTime);
+
+            try
+            {
+                connection.Open();
+                var tableCmd = connection.CreateCommand();
+                tableCmd.CommandText =
+                    "INSERT INTO codingTracker(StartTime, Endtime, Duration) " +
+                    $"VALUES ('{startTime}', '{endTime}', '{duration}');";
+                tableCmd.ExecuteNonQuery();
+            }
+            catch 
+            {
+
+                Console.WriteLine("an error occured");
+            }
+            finally 
+            { 
+                connection.Close(); 
+            }
+
+
+
+
+        }
+
+        static internal void UpdateSession()
+        {
+            using var connection = new SqliteConnection(connectionString);
+            DateTime startTime = DateTime.Now;
+
+        }
     }
 }

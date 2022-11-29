@@ -2,7 +2,7 @@
 
 namespace CodingTracker
 {
-    internal class Menu
+    internal class MainMenu
     {
         private static List<MenuItem> menuItems = new()
         {

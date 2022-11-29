@@ -1,3 +1,3 @@
 ﻿using CodingTracker;
 
-Menu.InitMainMenu();
+MainMenu.InitMainMenu();
