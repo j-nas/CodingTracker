@@ -14,7 +14,7 @@ namespace CodingTracker
     
     internal class CodingController
     {
-        internal void GetAllRecords()
+        static internal void GetAllRecords()
         {
             using var connection = new SqliteConnection(connectionString);
             try
@@ -52,6 +52,16 @@ namespace CodingTracker
         }
         static internal void NukeDatabase()
         {
+            Console.WriteLine("This will delete all records in database. Type 'nuke' if yes.");
+            Console.CursorVisible = true;
+            string answer = Console.ReadLine();
+            if (answer.ToLower() != "nuke")
+            {
+                var mainMenu = new MainMenu();
+                mainMenu.Render();
+                return;
+            }
+            
             using var connection = new SqliteConnection(connectionString);
             try
             {
@@ -61,6 +71,7 @@ namespace CodingTracker
                     "DROP TABLE codingTracker;";
 
                 tableCmd.ExecuteNonQuery();
+                Environment.Exit(0);
             }
             catch
             {
@@ -70,6 +81,7 @@ namespace CodingTracker
             {
                 connection.Close();
             }
+
         }
 
         static internal void InsertSession()
@@ -88,6 +100,14 @@ namespace CodingTracker
                     "INSERT INTO codingTracker(StartTime, Endtime, Duration) " +
                     $"VALUES ('{startTime}', '{endTime}', '{duration}');";
                 tableCmd.ExecuteNonQuery();
+
+                Console.WriteLine(
+                    $"Session with a duration of {duration} added to database" +
+                    $"\nPress any key to continue");
+                Console.ReadKey();
+
+                var mainMenu = new MainMenu();
+                mainMenu.Render();
             }
             catch 
             {
@@ -98,6 +118,8 @@ namespace CodingTracker
             { 
                 connection.Close(); 
             }
+
+
 
 
 

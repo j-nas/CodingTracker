@@ -6,8 +6,8 @@ namespace CodingTracker
     internal class Database
 
     {
-        internal static string connectionString =
-                  ConfigurationManager.AppSettings.Get("sqliteDbFile");
+        internal static string? connectionString =
+                  $@"{ConfigurationManager.AppSettings.Get("sqliteDbFile")}";
         internal static void InitDatabase()
         {
             try
@@ -25,9 +25,9 @@ namespace CodingTracker
                     ");";
                 tableCmd.ExecuteNonQuery();
             }
-            catch
+            catch (Exception ex) 
             {
-                Console.WriteLine("An error occured");
+                Console.WriteLine("An error occured" + ex);
             }
 
         }

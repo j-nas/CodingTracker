@@ -1,3 +1,7 @@
 ﻿using CodingTracker;
 
-MainMenu.InitMainMenu();
+Database.InitDatabase();
+
+var mainMenu = new MainMenu();
+mainMenu.Render();
+

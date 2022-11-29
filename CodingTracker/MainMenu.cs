@@ -4,16 +4,18 @@ namespace CodingTracker
 {
     internal class MainMenu
     {
-        private static List<MenuItem> menuItems = new()
+        private static readonly List<MenuItem> menuItems = new()
         {
             new MenuItem {Key = ConsoleKey.Q, Label = "Quit Application", Method = () => { Environment.Exit(0); } },
-            new MenuItem {Key = ConsoleKey.A, Label = "Get All records", Method = () => { Console.WriteLine("Get all records");; } },
+            new MenuItem {Key = ConsoleKey.A, Label = "Get All records", Method =  CodingController.GetAllRecords },
+            new MenuItem {Key = ConsoleKey.N, Label = "Nuke Database", Method = CodingController.NukeDatabase },
+            new MenuItem {Key = ConsoleKey.I, Label = "Insert new session", Method = CodingController.InsertSession}
 
         };
 
-        static internal void InitMainMenu()
+        private readonly BasicMenu.BasicMenu mainMenu = new("Coding Tracker", "Please select from the following:", menuItems);
+        public void Render()
         {
-            BasicMenu.BasicMenu mainMenu = new("Coding Tracker", "Please select from the following:", menuItems);
             mainMenu.RenderMenu();
         }
     }
