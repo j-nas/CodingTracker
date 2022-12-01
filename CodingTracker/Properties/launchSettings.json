@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CodingTracker": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\jonna\\Projects\\CodingTracker\\CodingTracker"
+    }
+  }
+}

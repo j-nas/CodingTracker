@@ -19,9 +19,9 @@ namespace CodingTracker
                 tableCmd.CommandText =
                     "CREATE TABLE IF NOT EXISTS codingTracker (" +
                     "Id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "Duration STRING," +
                     "StartTime STRING," +
-                    "EndTime STRING" +
+                    "EndTime STRING," +
+                    "Duration STRING" +
                     ");";
                 tableCmd.ExecuteNonQuery();
             }

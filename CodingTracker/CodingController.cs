@@ -1,4 +1,5 @@
 ﻿using CodingTracker.Models;
+using ConsoleTableExt;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace CodingTracker
     
     internal class CodingController
     {
-        static internal void GetAllRecords()
+        static internal List<CodingSession> GetAllRecords()
         {
             using var connection = new SqliteConnection(connectionString);
             try
@@ -39,26 +40,31 @@ namespace CodingTracker
                             Duration = reader.GetTimeSpan(3),
                         });
                     }
+                    Console.CursorVisible= true;
+                    connection.Close();
+                    return tableData;
+
+                }
+                else
+                {
+                    return tableData;
                 }
             }
             catch
             {
-                Console.WriteLine("An error occured");
+                Console.WriteLine("An error occured getting records");
+                throw new Exception();
             }
-            finally
-            {
-                connection.Close();
-            }
+            
         }
-        static internal void NukeDatabase()
+        static internal void DeleteAllRecords()
         {
             Console.WriteLine("This will delete all records in database. Type 'nuke' if yes.");
             Console.CursorVisible = true;
             string answer = Console.ReadLine();
             if (answer.ToLower() != "nuke")
             {
-                var mainMenu = new MainMenu();
-                mainMenu.Render();
+                MainMenu.Render();
                 return;
             }
             
@@ -68,20 +74,19 @@ namespace CodingTracker
                 connection.Open();
                 var tableCmd = connection.CreateCommand();
                 tableCmd.CommandText =
-                    "DROP TABLE codingTracker;";
+                    "DELETE FROM codingTracker;";
 
                 tableCmd.ExecuteNonQuery();
-                Environment.Exit(0);
+                
+                Console.WriteLine("All records deleted. Press any key to continue");
+                Console.ReadKey();
+                MainMenu.Render();
             }
             catch
             {
-                Console.WriteLine("An error occured");
+                Console.WriteLine("An error occured nuking the database");
+                Console.ReadLine();
             }
-            finally
-            {
-                connection.Close();
-            }
-
         }
 
         static internal void InsertSession()
@@ -90,7 +95,7 @@ namespace CodingTracker
 
             DateTime startTime = DateTime.Now;
             DateTime endTime = DateTime.Now.AddDays(2);
-            TimeSpan duration = startTime.Subtract(endTime);
+            TimeSpan duration = endTime.Subtract(startTime);
 
             try
             {
@@ -102,17 +107,20 @@ namespace CodingTracker
                 tableCmd.ExecuteNonQuery();
 
                 Console.WriteLine(
-                    $"Session with a duration of {duration} added to database" +
+                    $"\n\nSession with a duration of {duration} added to database" +
                     $"\nPress any key to continue");
                 Console.ReadKey();
+                MainMenu.Render();
 
-                var mainMenu = new MainMenu();
-                mainMenu.Render();
             }
             catch 
             {
 
-                Console.WriteLine("an error occured");
+                Console.WriteLine("an error occured inserting the session");
+                Console.WriteLine($"\t start time: {startTime.ToString()}");
+                Console.WriteLine($"\t end time : {endTime}");
+                Console.WriteLine($"\t duration: {duration}");
+                Console.ReadLine() ;
             }
             finally 
             { 
@@ -126,11 +134,40 @@ namespace CodingTracker
 
         }
 
-        static internal void UpdateSession()
+        static internal void UpdateSession(int id)
+        {
+            DateTime startTime = DateTime.Now;
+            DateTime endTime = startTime.AddDays(2);
+            TimeSpan duration = endTime.Subtract(startTime);
+
+            using var connection = new SqliteConnection(connectionString);
+            connection.Open();
+            var tableCmd = connection.CreateCommand();
+            tableCmd.CommandText = 
+                $"UPDATE codingTracker SET StartTime = {startTime} WHERE Id = {id};" +
+                $"UPDATE codingTracker SET EndTime = {endTime} WHERE Id = {id};" +
+                $"UPDATE codingTracker SET Duration = {duration} WHERE Id = {id}";
+            tableCmd.ExecuteNonQuery();
+
+            connection.Close() ;
+
+            Console.WriteLine($"Entry with Id {id} updated successfuly. Press any key to return to the previous menu");
+            Console.ReadKey();
+            ViewUpdateDelete.ViewUpdateDeleteSubMenu();
+
+        }
+        static internal void DeleteSession(int id)
         {
             using var connection = new SqliteConnection(connectionString);
-            DateTime startTime = DateTime.Now;
+            connection.Open();
+            var tableCmd = connection.CreateCommand();
+            tableCmd.CommandText =
+                $"DELETE FROM codingTracker WHERE Id = {id}";
+            connection.Close();
 
+            Console.WriteLine($"Entry with Id {id} deleted successfuly. Press any key to return to the previous menu");
+            Console.ReadKey();
+            ViewUpdateDelete.ViewUpdateDeleteSubMenu();
         }
     }
 }
