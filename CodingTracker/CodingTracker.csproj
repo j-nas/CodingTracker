@@ -17,7 +17,7 @@
     <Content Include="MainMenu.cs" />
     <Content Include="Program.cs" />
     <Content Include="SubMenu.cs" />
-    <Content Include="Utils.cs" />
+    <Content Include="UserInput.cs" />
     <Content Include="ViewUpdateDelete.cs" />
     <Content Include="Models\CodingSession.cs" />
   </ItemGroup>

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CodingTracker
 {
-    using static Utils;
+    using static UserInput;
     using static Database;
     
     internal class CodingController
@@ -89,24 +89,11 @@ namespace CodingTracker
             }
         }
 
-        internal static void InsertSession(ReturnMenu returnMenu)
+        internal static void InsertSession(DateTime startTime, DateTime endTime, TimeSpan duration, ReturnMenu returnMenu)
         {
             using var connection = new SqliteConnection(connectionString);
 
-            DateTime startTime = GetDateTimeInput(
-                "\n\nEnter the date and time for the start of the coding session:\nEnter 'R' to return to the main menu.\n",
-                returnMenu);
-            DateTime endTime = GetDateTimeInput(
-                "\n\nEnter the date and time of the end of the coding session:\nEnter 'R' to return to the main menu.\n",
-                returnMenu);
-            TimeSpan duration = endTime.Subtract(startTime);
-
-            if (duration < TimeSpan.Zero)
-            {
-                Console.WriteLine("Error: End of session precedes start of session. Returning to previous menu.");
-                Console.ReadKey();
-                ReturnMenuSwitch(returnMenu);
-            }
+            
 
             try
             {
@@ -147,9 +134,20 @@ namespace CodingTracker
 
         internal static void UpdateSession(int id, ReturnMenu returnMenu)
         {
-            DateTime startTime = DateTime.Now;
-            DateTime endTime = startTime.AddHours(2);
+            DateTime startTime = GetDateTimeInput(
+                "\n\nEnter the date and time for the start of the coding session:\nEnter 'R' to return to the main menu.\n",
+                returnMenu);
+            DateTime endTime = GetDateTimeInput(
+                "\n\nEnter the date and time of the end of the coding session:\nEnter 'R' to return to the main menu.\n",
+                returnMenu);
             TimeSpan duration = endTime.Subtract(startTime);
+
+            if (duration < TimeSpan.Zero)
+            {
+                Console.WriteLine("Error: End of session precedes start of session. Returning to previous menu.");
+                Console.ReadKey();
+                ReturnMenuSwitch(returnMenu);
+            }
 
             using var connection = new SqliteConnection(connectionString);
             connection.Open();
@@ -171,7 +169,7 @@ namespace CodingTracker
 
             Console.WriteLine($"Entry with Id {id} updated successfuly. Press any key to return to the previous menu");
             Console.ReadKey();
-            ViewUpdateDelete.ViewUpdateDeleteSubMenu();
+            ViewUpdateDelete.ViewAllSubMenu();
 
         }
         internal static void DeleteSession(int id, ReturnMenu returnMenu)
@@ -193,7 +191,7 @@ namespace CodingTracker
 
             Console.WriteLine($"Entry with Id {id} deleted successfuly. Press any key to return to the previous menu");
             Console.ReadKey();
-            ViewUpdateDelete.ViewUpdateDeleteSubMenu();
+            ViewUpdateDelete.ViewAllSubMenu();
         }
     }
 }

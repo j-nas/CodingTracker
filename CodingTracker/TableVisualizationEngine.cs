@@ -19,7 +19,7 @@ namespace CodingTracker
 
             foreach (CodingSession session in sessions)
             {
-                tableData.Add(new List<object> { session.Id, session.Duration, session.StartTime, session.EndTime });
+                tableData.Add(new List<object> { session.Id, session.Duration.ToString(@"hh\:mm\:ss"), session.StartTime, session.EndTime });
             }
 
             table = ConsoleTableBuilder

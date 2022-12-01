@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CodingTracker
 {
-using static Utils;
+using static UserInput;
     internal class ViewUpdateDelete
     {
         private static List<MenuItem> menuItems = new List<MenuItem>
@@ -18,7 +18,7 @@ using static Utils;
 
         };
         
-        public static void ViewUpdateDeleteSubMenu() 
+        public static void ViewAllSubMenu() 
         {
             var sessions = CodingController.GetAllRecords();
             SubMenu menu;
@@ -45,11 +45,17 @@ using static Utils;
         private static void UpdateEntry()
         {
             int id = GetNumberInput(
-                "\n\nEnter the Id of the entry you wish to delete, or enter 'R' to return to the previous menu:",
+                "\n\nEnter the Id of the entry you wish to update, or enter 'R' to return to the previous menu:",
                 ReturnMenu.ViewUpdateDeleteSubMenu);
             CodingController.UpdateSession(id, ReturnMenu.ViewUpdateDeleteSubMenu);
         }
-
-
+        
+        private enum ViewFilter
+        {
+            None,
+            Day,
+            Month,
+            Year,
+        }
     }
 }

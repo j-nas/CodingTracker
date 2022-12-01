@@ -5,13 +5,65 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using static CodingTracker.UserInput;
 
 namespace CodingTracker
 {
-    internal class Utils
+    internal class UserInput
     {
-        
-       
+
+        internal static void GetManualSessionInput(ReturnMenu returnMenu)
+        {
+            DateTime startTime = GetDateTimeInput(
+                "\n\nEnter the date and time for the start of the coding session:\nEnter 'R' to return to the main menu.\n",
+                returnMenu);
+            DateTime endTime = GetDateTimeInput(
+                "\n\nEnter the date and time of the end of the coding session:\nEnter 'R' to return to the main menu.\n",
+                returnMenu);
+            TimeSpan duration = endTime.Subtract(startTime);
+
+            if (duration < TimeSpan.Zero)
+            {
+                Console.WriteLine("Error: End of session precedes start of session. Returning to previous menu.");
+                Console.ReadKey();
+                ReturnMenuSwitch(returnMenu);
+            }
+            CodingController.InsertSession(startTime, endTime, duration, returnMenu);
+        }
+        internal static void GetTimedSessionInput(ReturnMenu returnMenu)
+        {
+            var timer = new Stopwatch();
+
+            timer.Start();
+            DateTime startTime = DateTime.Now;
+            Console.WriteLine($"\nTimer started at {startTime}. Press any key to stop timer.");
+            Console.ReadKey();
+
+            timer.Stop();
+            DateTime endTime = DateTime.Now;
+            TimeSpan duration = endTime.Subtract(startTime);
+            Console.WriteLine($"\nTimer stopped at {endTime}. Total session duration is {duration}");
+            Console.WriteLine($"\nDo you want to record this time? [Y/N]");
+            string confirm = "";
+            while (confirm.ToLower() != "y" || confirm.ToLower() != "n")
+            {
+                confirm = Console.ReadLine();
+                if (confirm == "y")
+                {
+                    Console.WriteLine("Adding session to database");
+                    CodingController.InsertSession(startTime, endTime, duration, returnMenu);
+
+                }
+                if (confirm == "n") 
+                {
+                    Console.WriteLine("Session discarded. Press enter to return to menu");
+                    Console.ReadLine();
+                    ReturnMenuSwitch(ReturnMenu.MainMenu);
+                }
+            }
+
+
+        }
         internal static int GetNumberInput(string message, ReturnMenu returnMenu)
         {
             Console.CursorVisible = true;
@@ -78,7 +130,7 @@ namespace CodingTracker
                     MainMenu.Render();
                     break;
                 case ReturnMenu.ViewUpdateDeleteSubMenu:
-                    ViewUpdateDelete.ViewUpdateDeleteSubMenu();
+                    ViewUpdateDelete.ViewAllSubMenu();
                     break;
             }
         }
