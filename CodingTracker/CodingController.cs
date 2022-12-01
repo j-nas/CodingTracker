@@ -93,9 +93,16 @@ namespace CodingTracker
         {
             using var connection = new SqliteConnection(connectionString);
 
-            DateTime startTime = DateTime.Now;
-            DateTime endTime = DateTime.Now.AddDays(2);
+            DateTime startTime = GetDateTimeInput("\n\nEnter the date and time for the start of the coding session:\n\n");
+            DateTime endTime = GetDateTimeInput("\n\nEnter the date and time of the end of the coding session:\n\n");
             TimeSpan duration = endTime.Subtract(startTime);
+
+            if (duration < TimeSpan.Zero)
+            {
+                Console.WriteLine("Error: End of session precedes start of session. Returning to main menu.");
+                Console.ReadKey();
+                MainMenu.Render();
+            }
 
             try
             {
@@ -107,7 +114,7 @@ namespace CodingTracker
                 tableCmd.ExecuteNonQuery();
 
                 Console.WriteLine(
-                    $"\n\nSession with a duration of {duration} added to database" +
+                    $"\n\nSession with a duration of {duration:c} added to database" +
                     $"\nPress any key to continue");
                 Console.ReadKey();
                 MainMenu.Render();
@@ -117,7 +124,7 @@ namespace CodingTracker
             {
 
                 Console.WriteLine("an error occured inserting the session");
-                Console.WriteLine($"\t start time: {startTime.ToString()}");
+                Console.WriteLine($"\t start time: {startTime}");
                 Console.WriteLine($"\t end time : {endTime}");
                 Console.WriteLine($"\t duration: {duration}");
                 Console.ReadLine() ;
@@ -162,7 +169,8 @@ namespace CodingTracker
             connection.Open();
             var tableCmd = connection.CreateCommand();
             tableCmd.CommandText =
-                $"DELETE FROM codingTracker WHERE Id = {id}";
+                $"DELETE FROM codingTracker WHERE Id = {id};";
+            tableCmd.ExecuteNonQuery();
             connection.Close();
 
             Console.WriteLine($"Entry with Id {id} deleted successfuly. Press any key to return to the previous menu");

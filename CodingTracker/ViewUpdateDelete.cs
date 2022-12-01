@@ -35,9 +35,9 @@ namespace CodingTracker
         }
         private static void DeleteEntry()
         {
-            Console.WriteLine("\n\nEnter the Id of the entry you wish to delete, or enter 'R' to return to the previous menu:");
-            Console.ReadLine();
-            ViewUpdateDeleteSubMenu();
+            int id = Utils.GetNumberInput("\n\nEnter the Id of the entry you wish to delete, or enter 'R' to return to the previous menu:");
+            CodingController.DeleteSession(id);
+            
         }
         private static void UpdateEntry()
         {

@@ -9,38 +9,26 @@ namespace CodingTracker
 {
     internal class Utils
     {
-        internal static int GetDuration(DateTime dateTime1, DateTime dateTime2)
-        {
-            return 0;
-        }
-        internal static ConsoleKey MenuKeyEnum(int key) => key switch
-        {
-            1 => ConsoleKey.D1,
-            2 => ConsoleKey.D2,
-            3 => ConsoleKey.D3,
-            4 => ConsoleKey.D4,
-            5 => ConsoleKey.D5,
-            6 => ConsoleKey.D6,
-            7 => ConsoleKey.D7,
-            8 => ConsoleKey.D8,
-            9 => ConsoleKey.D9,
-            _ => ConsoleKey.NoName,
-        };
+        
+       
         internal static int GetNumberInput(string message)
         {
+            Console.CursorVisible = true;
             Console.WriteLine(message);
-            var input = Console.ReadLine();
+            string input = Console.ReadLine();
             int outputNumber;
             while (!int.TryParse(input, out outputNumber))
             {
-                if (input.ToLower() == "r") Console.WriteLine("whoops"); ;
+                if (input.ToLower() == "r") ViewUpdateDelete.ViewUpdateDeleteSubMenu();
                 Console.WriteLine("\nPlease enter a whole number");
+                Console.ReadLine();
             }
             return outputNumber;
                 
         }
         internal static DateTime GetDateTimeInput(string message)
         {
+            Console.CursorVisible = true;
             Console.WriteLine(message);
             DateOnly dateInput = GetDateInput();
             TimeOnly timeInput = GetTimeInput();
@@ -50,17 +38,30 @@ namespace CodingTracker
 
         private static DateOnly GetDateInput()
         {
-            Console.WriteLine("\n\nEnter date in the following format: ");
+            Console.WriteLine("\n\nEnter date in the following format: YYYY-MM-DD. Enter 'R' to return to the previous menu.");
             string input = Console.ReadLine();
             DateOnly output;
-            DateOnly.TryParse(input, out output);
-            Console.WriteLine(output);
+            while (!DateOnly.TryParse(input, out output))
+            {
+            if (input.ToLower().Equals("r")) ViewUpdateDelete.ViewUpdateDeleteSubMenu();
+                Console.WriteLine("Invalid format. Please try again.");
+                input = Console.ReadLine();
+            }
             return output;
         }
 
         private static TimeOnly GetTimeInput()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("\n\nEnter the time in the following format: HH:MM. Enter 'R' to return to the previous menu.");
+            string input = Console.ReadLine();
+            TimeOnly output;
+            while (!TimeOnly.TryParse(input, out output))
+            {
+                if (input.ToLower().Equals("r")) ViewUpdateDelete.ViewUpdateDeleteSubMenu();
+                Console.WriteLine("Invalid format. Please try again.");
+                Console.ReadLine();
+            }
+            return output;
         }
     }
 }
