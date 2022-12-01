@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace CodingTracker
 {
+using static Utils;
     internal class ViewUpdateDelete
     {
         private static List<MenuItem> menuItems = new List<MenuItem>
@@ -35,16 +36,20 @@ namespace CodingTracker
         }
         private static void DeleteEntry()
         {
-            int id = Utils.GetNumberInput("\n\nEnter the Id of the entry you wish to delete, or enter 'R' to return to the previous menu:");
-            CodingController.DeleteSession(id);
+            int id = GetNumberInput(
+                "\n\nEnter the Id of the entry you wish to delete, or enter 'R' to return to the previous menu:",
+                ReturnMenu.ViewUpdateDeleteSubMenu);
+            CodingController.DeleteSession(id, ReturnMenu.ViewUpdateDeleteSubMenu);
             
         }
         private static void UpdateEntry()
         {
-            Console.WriteLine("\n\nEnter the Id of the entry you wish to delete, or enter 'R' to return to the previous menu:");
-            Console.ReadLine();
-            ViewUpdateDeleteSubMenu();
+            int id = GetNumberInput(
+                "\n\nEnter the Id of the entry you wish to delete, or enter 'R' to return to the previous menu:",
+                ReturnMenu.ViewUpdateDeleteSubMenu);
+            CodingController.UpdateSession(id, ReturnMenu.ViewUpdateDeleteSubMenu);
         }
+
 
     }
 }

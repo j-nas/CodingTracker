@@ -15,7 +15,7 @@ namespace CodingTracker
     
     internal class CodingController
     {
-        static internal List<CodingSession> GetAllRecords()
+        internal static List<CodingSession> GetAllRecords()
         {
             using var connection = new SqliteConnection(connectionString);
             try
@@ -57,7 +57,7 @@ namespace CodingTracker
             }
             
         }
-        static internal void DeleteAllRecords()
+        internal static void DeleteAllRecords()
         {
             Console.WriteLine("This will delete all records in database. Type 'nuke' if yes.");
             Console.CursorVisible = true;
@@ -89,19 +89,23 @@ namespace CodingTracker
             }
         }
 
-        static internal void InsertSession()
+        internal static void InsertSession(ReturnMenu returnMenu)
         {
             using var connection = new SqliteConnection(connectionString);
 
-            DateTime startTime = GetDateTimeInput("\n\nEnter the date and time for the start of the coding session:\n\n");
-            DateTime endTime = GetDateTimeInput("\n\nEnter the date and time of the end of the coding session:\n\n");
+            DateTime startTime = GetDateTimeInput(
+                "\n\nEnter the date and time for the start of the coding session:\nEnter 'R' to return to the main menu.\n",
+                returnMenu);
+            DateTime endTime = GetDateTimeInput(
+                "\n\nEnter the date and time of the end of the coding session:\nEnter 'R' to return to the main menu.\n",
+                returnMenu);
             TimeSpan duration = endTime.Subtract(startTime);
 
             if (duration < TimeSpan.Zero)
             {
-                Console.WriteLine("Error: End of session precedes start of session. Returning to main menu.");
+                Console.WriteLine("Error: End of session precedes start of session. Returning to previous menu.");
                 Console.ReadKey();
-                MainMenu.Render();
+                ReturnMenuSwitch(returnMenu);
             }
 
             try
@@ -141,37 +145,51 @@ namespace CodingTracker
 
         }
 
-        static internal void UpdateSession(int id)
+        internal static void UpdateSession(int id, ReturnMenu returnMenu)
         {
             DateTime startTime = DateTime.Now;
-            DateTime endTime = startTime.AddDays(2);
+            DateTime endTime = startTime.AddHours(2);
             TimeSpan duration = endTime.Subtract(startTime);
 
             using var connection = new SqliteConnection(connectionString);
             connection.Open();
             var tableCmd = connection.CreateCommand();
             tableCmd.CommandText = 
-                $"UPDATE codingTracker SET StartTime = {startTime} WHERE Id = {id};" +
-                $"UPDATE codingTracker SET EndTime = {endTime} WHERE Id = {id};" +
-                $"UPDATE codingTracker SET Duration = {duration} WHERE Id = {id}";
-            tableCmd.ExecuteNonQuery();
-
+                $"UPDATE codingTracker SET StartTime = \"{startTime}\" WHERE Id = {id};" +
+                $"UPDATE codingTracker SET EndTime = \"{endTime}\" WHERE Id = {id};" +
+                $"UPDATE codingTracker SET Duration = \"{duration}\" WHERE Id = {id};";
+            int rowCount = tableCmd.ExecuteNonQuery();
             connection.Close() ;
+            
+            if (rowCount == 0 )
+            {
+                Console.WriteLine($"Record with Id {id} doesn't exist. Press any key to continue");
+                Console.ReadKey();
+                ReturnMenuSwitch(returnMenu);
+            }
+
 
             Console.WriteLine($"Entry with Id {id} updated successfuly. Press any key to return to the previous menu");
             Console.ReadKey();
             ViewUpdateDelete.ViewUpdateDeleteSubMenu();
 
         }
-        static internal void DeleteSession(int id)
+        internal static void DeleteSession(int id, ReturnMenu returnMenu)
         {
             using var connection = new SqliteConnection(connectionString);
             connection.Open();
             var tableCmd = connection.CreateCommand();
             tableCmd.CommandText =
                 $"DELETE FROM codingTracker WHERE Id = {id};";
-            tableCmd.ExecuteNonQuery();
+            int rowCount = tableCmd.ExecuteNonQuery();
             connection.Close();
+
+            if (rowCount == 0)
+            {
+                Console.WriteLine($"Record with Id {id} doesn't exist. Press any key to continue");
+                Console.ReadKey();
+                ReturnMenuSwitch(returnMenu);
+            }
 
             Console.WriteLine($"Entry with Id {id} deleted successfuly. Press any key to return to the previous menu");
             Console.ReadKey();

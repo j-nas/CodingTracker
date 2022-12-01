@@ -22,7 +22,12 @@ namespace CodingTracker
                 tableData.Add(new List<object> { session.Id, session.Duration, session.StartTime, session.EndTime });
             }
 
-            table = ConsoleTableBuilder.From(tableData).Export().ToString();
+            table = ConsoleTableBuilder
+                .From(tableData)
+                .WithTitle("Coding Sessions", ConsoleColor.Magenta)
+                .WithColumn("Id", "Duration", "Start Time", "End time")
+                .WithFormat(ConsoleTableBuilderFormat.Alternative)
+                .Export().ToString();
         }
     }
 }
